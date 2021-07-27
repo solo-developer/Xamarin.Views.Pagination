@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Xam.Views.Pagination.PaginationView"
+                xmlns:xct="http://xamarin.com/schemas/2020/toolkit">
+    <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" Margin="0,0,0,10">
+        <ImageButton HeightRequest="40" BackgroundColor="Transparent" IsEnabled="{Binding AllowFirstPageNavigation}">
+            <ImageButton.Source>
+                <FontImageSource FontFamily="FontAwesomeSolid"
+                      Color="{Binding FirstPageButtonForegroundColor}"
+                     Glyph="&#xf100;"/>
+            </ImageButton.Source>
+
+            <ImageButton.Behaviors>
+                <xct:EventToCommandBehavior EventName="Clicked" Command="{Binding MoveToFirstPageCommand}"></xct:EventToCommandBehavior>
+            </ImageButton.Behaviors>
+        </ImageButton>
+        <ImageButton HeightRequest="40" BackgroundColor="Transparent" IsEnabled="{Binding AllowPreviousPageNavigation}">
+            <ImageButton.Source>
+                <FontImageSource FontFamily="FontAwesomeSolid"
+                      Color="{Binding PreviousPageButtonForegroundColor}"
+                     Glyph="&#xf104;"/>
+            </ImageButton.Source>
+            <ImageButton.Behaviors>
+                <xct:EventToCommandBehavior EventName="Clicked" Command="{Binding MoveToPreviousPageCommand}"></xct:EventToCommandBehavior>
+            </ImageButton.Behaviors>
+        </ImageButton>
+        <Frame CornerRadius="20" HorizontalOptions="Start" WidthRequest="30" VerticalOptions="Center" Margin="0" Padding="10" BackgroundColor="{Binding IconBackgroundColor}">
+            <Label Text="{Binding CurrentPage}" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" FontAttributes="Bold" />
+        </Frame>
+        <Label Text="{Binding PageCount,StringFormat='Of {0}'}" VerticalOptions="Center" FontAttributes="Bold"></Label>
+        <ImageButton HeightRequest="40" BackgroundColor="Transparent" IsEnabled="{Binding AllowNextPageNavigation}">
+            <ImageButton.Source>
+                <FontImageSource FontFamily="FontAwesomeSolid"
+                      Color="{Binding NextPageButtonForegroundColor}"
+                     Glyph="&#xf105;"/>
+            </ImageButton.Source>
+            <ImageButton.Behaviors>
+                <xct:EventToCommandBehavior EventName="Clicked" Command="{Binding MoveToNextPageCommand}"></xct:EventToCommandBehavior>
+            </ImageButton.Behaviors>
+        </ImageButton>
+        <ImageButton HeightRequest="40" BackgroundColor="Transparent" IsEnabled="{Binding AllowLastPageNavigation}">
+            <ImageButton.Source>
+                <FontImageSource FontFamily="FontAwesomeSolid"
+                       Color="{Binding LastPageButtonForegroundColor}"
+                     Glyph="&#xf101;"/>
+            </ImageButton.Source>
+            <ImageButton.Behaviors>
+                <xct:EventToCommandBehavior EventName="Clicked" Command="{Binding MoveToLastPageCommand}"></xct:EventToCommandBehavior>
+            </ImageButton.Behaviors>
+        </ImageButton>
+    </StackLayout>
+</ContentView>
