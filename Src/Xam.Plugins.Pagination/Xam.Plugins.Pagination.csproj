@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Niroj Dahal</Authors>
+    <Description>Web-like pagination for Xamarin Forms</Description>
+    <PackageProjectUrl>https://github.com/solo-developer/Xamarin.Views.Pagination</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/solo-developer/Xamarin.Views.Pagination</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
