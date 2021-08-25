@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Xam.Views.Pagination.ViewModels
+namespace Xam.Plugins.Pagination.ViewModels
 {
     public abstract class ViewModelBase : INotifyPropertyChanged
     {

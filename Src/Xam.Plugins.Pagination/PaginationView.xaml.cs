@@ -1,12 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
-using Xam.Views.Pagination.ViewModels;
+using Xam.Plugins.Pagination.ViewModels;
 using Xamarin.CommunityToolkit.ObjectModel;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 [assembly: ExportFont("FontAwesomeSolid.otf", Alias = "FontAwesomeSolid")]
-namespace Xam.Views.Pagination
+namespace Xam.Plugins.Pagination
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class PaginationView : ContentView, INotifyPropertyChanged

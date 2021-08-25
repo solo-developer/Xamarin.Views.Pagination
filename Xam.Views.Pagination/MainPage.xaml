@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Xam.Views.Pagination.MainPage"
-               xmlns:customViews="clr-namespace:Xam.Views.Pagination" x:Name="Page">
+               xmlns:customViews="clr-namespace:Xam.Plugins.Pagination;assembly=Xam.Plugins.Pagination" x:Name="Page">
 
     <StackLayout>
         <Frame BackgroundColor="#2196F3" Padding="24" CornerRadius="0">

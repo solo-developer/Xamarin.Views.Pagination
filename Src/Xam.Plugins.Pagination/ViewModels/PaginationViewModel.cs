@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Xamarin.CommunityToolkit.ObjectModel;
 using Xamarin.Forms;
 
-namespace Xam.Views.Pagination.ViewModels
+namespace Xam.Plugins.Pagination.ViewModels
 {
     public class PaginationViewModel : ViewModelBase
     {
