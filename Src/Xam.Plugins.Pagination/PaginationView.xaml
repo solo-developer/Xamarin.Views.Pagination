@@ -2,7 +2,9 @@
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Xam.Plugins.Pagination.PaginationView"
-                xmlns:xct="http://xamarin.com/schemas/2020/toolkit">
+                xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+             xmlns:viewModels="clr-namespace:Xam.Plugins.Pagination.ViewModels"
+             x:DataType="viewModels:PaginationViewModel">
     <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" Margin="0,0,0,10">
         <ImageButton HeightRequest="40" BackgroundColor="Transparent" IsEnabled="{Binding AllowFirstPageNavigation}">
             <ImageButton.Source>
