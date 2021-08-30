@@ -73,7 +73,7 @@ namespace Xam.Plugins.Pagination
         private void ScrollToCurrentPage(PageNumberModel vm)
         {
             if (vm != null)
-                NumbersCollectionView.ScrollTo(vm, null, position: ScrollToPosition.Center);
+                NumbersCollectionView.ScrollTo(vm, null, position: ScrollToPosition.Center,animate:true);
         }
 
         private static void CurrentPagePropertyChanged(BindableObject bindable, object oldValue, object newValue)

@@ -8,13 +8,30 @@
         <Frame BackgroundColor="#2196F3" Padding="24" CornerRadius="0">
             <Label Text="Welcome to Xamarin.Forms!" HorizontalTextAlignment="Center" TextColor="White" FontSize="36"/>
         </Frame>
-        <customViews:PaginationView 
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Row="0" Grid.Column="0" Text="Navigate using Page Number?"/>
+            <Switch x:Name="NumberNavigationSwitch" Grid.Row="0" Grid.Column="1"/>
+
+            <Label Grid.Row="1" Grid.Column="0" Text="Total Pages"/>
+            <Entry Grid.Row="1" Grid.Column="1" Keyboard="Numeric" x:Name="TotalPages"/>
+        </Grid>
+
+        <Frame Padding="5">
+            <customViews:PaginationView
                             CurrentPage="1"
-                            PageCount="15" 
+                            PageCount="{Binding Source={Reference TotalPages},Path=Text}" 
                             OnPaginated="{Binding Source={x:Reference Page}, Path=BindingContext.OnPaginatedCommand}"
                             IconBackgroundColor="Red"
                             DisabledColor="Gray"
-                            NumberNavigationEnabled="True"/>
+                            NumberNavigationEnabled="{Binding Source={Reference NumberNavigationSwitch},Path=IsToggled}"/>
+        </Frame>
+       
     </StackLayout>
 
 </ContentPage>
