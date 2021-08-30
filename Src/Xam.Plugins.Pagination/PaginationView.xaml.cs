@@ -1,5 +1,5 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using Xam.Plugins.Pagination.Models;
 using Xam.Plugins.Pagination.ViewModels;
 using Xamarin.CommunityToolkit.ObjectModel;
 using Xamarin.Forms;
@@ -11,10 +11,14 @@ namespace Xam.Plugins.Pagination
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class PaginationView : ContentView, INotifyPropertyChanged
     {
+        const string PAGE_NUM_CHANGED_KEY = "page_number_changed";
         public PaginationView()
         {
             InitializeComponent();
-            BindingContext = new PaginationViewModel();
+            var vm = new PaginationViewModel(); ;
+            BindingContext = vm;
+            MessagingCenter.Subscribe<PageNumberModel>(this, PAGE_NUM_CHANGED_KEY, SubscribeToEvents);
+            NumbersCollectionView.WidthRequest = 50;
         }
 
         public static readonly BindableProperty CurrentPageProperty = BindableProperty.Create(nameof(CurrentPage), typeof(int), typeof(PaginationView), defaultValue: 1, propertyChanged: CurrentPagePropertyChanged);
@@ -28,7 +32,16 @@ namespace Xam.Plugins.Pagination
         public static readonly BindableProperty IconBackgroundColorProperty = BindableProperty.Create(nameof(IconBackgroundColor), typeof(Color), typeof(PaginationView), defaultValue: Color.Green, propertyChanged: IconBackgroundColorPropertyChanged);
 
 
-        public static readonly BindableProperty OnPaginatedProperty = BindableProperty.Create(nameof(OnPaginated), typeof(IAsyncCommand<int>), typeof(PaginationView),propertyChanged: OnPaginatedCommandChanged);
+        public static readonly BindableProperty OnPaginatedProperty = BindableProperty.Create(nameof(OnPaginated), typeof(IAsyncCommand<int>), typeof(PaginationView), propertyChanged: OnPaginatedCommandChanged);
+
+        public static readonly BindableProperty NumberNavigationEnabledProperty = BindableProperty.Create(nameof(NumberNavigationEnabled), typeof(bool), typeof(PaginationView), propertyChanged: OnNumberNavigationEnabledChanged);
+
+        private static void OnNumberNavigationEnabledChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            var vm = (PaginationViewModel)bindable.BindingContext;
+            vm.NumberNavigationEnabled = (bool)newValue;
+            vm.SetPageNavigationValues();
+        }
 
         private static void OnPaginatedCommandChanged(BindableObject bindable, object oldValue, object newValue)
         {
@@ -54,6 +67,13 @@ namespace Xam.Plugins.Pagination
             var vm = (PaginationViewModel)bindable.BindingContext;
             vm.PageCount = (int)newValue;
             vm.SetPageNavigationValues();
+            ((PaginationView)bindable).NumbersCollectionView.WidthRequest = ((int)newValue) * 50 + 5;
+        }
+
+        private void ScrollToCurrentPage(PageNumberModel vm)
+        {
+            if (vm != null)
+                NumbersCollectionView.ScrollTo(vm, null, position: ScrollToPosition.Center);
         }
 
         private static void CurrentPagePropertyChanged(BindableObject bindable, object oldValue, object newValue)
@@ -66,6 +86,11 @@ namespace Xam.Plugins.Pagination
         {
             get => (Color)GetValue(DisabledColorProperty);
             set => SetValue(DisabledColorProperty, value);
+        }
+        public bool NumberNavigationEnabled
+        {
+            get => (bool)GetValue(NumberNavigationEnabledProperty);
+            set => SetValue(NumberNavigationEnabledProperty, value);
         }
 
         public Color IconBackgroundColor
@@ -92,5 +117,11 @@ namespace Xam.Plugins.Pagination
             set => SetValue(OnPaginatedProperty, value);
         }
 
+        private void SubscribeToEvents(PageNumberModel model)
+        {
+            MessagingCenter.Unsubscribe<PageNumberModel>(this, PAGE_NUM_CHANGED_KEY);
+            this.ScrollToCurrentPage(model);
+            MessagingCenter.Subscribe<PageNumberModel>(this, PAGE_NUM_CHANGED_KEY, SubscribeToEvents);
+        }
     }
 }

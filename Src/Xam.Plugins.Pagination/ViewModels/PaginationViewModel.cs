@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Xam.Plugins.Pagination.Models;
 using Xamarin.CommunityToolkit.ObjectModel;
 using Xamarin.Forms;
 
@@ -13,6 +13,9 @@ namespace Xam.Plugins.Pagination.ViewModels
         public IAsyncValueCommand MoveToPreviousPageCommand { get; set; }
         public IAsyncValueCommand MoveToNextPageCommand { get; set; }
         public IAsyncValueCommand MoveToLastPageCommand { get; set; }
+        public IAsyncCommand<PageNumberModel> NavigatedThroughPageNumberCommand { get; set; }
+
+
 
         public PaginationViewModel()
         {
@@ -20,10 +23,27 @@ namespace Xam.Plugins.Pagination.ViewModels
             MoveToPreviousPageCommand = new AsyncValueCommand(() => GetPreviousPageData(), allowsMultipleExecutions: false);
             MoveToNextPageCommand = new AsyncValueCommand(() => GetNextPageData(), allowsMultipleExecutions: false);
             MoveToLastPageCommand = new AsyncValueCommand(() => GetLastPageData(), allowsMultipleExecutions: false);
+            NavigatedThroughPageNumberCommand = new AsyncCommand<PageNumberModel>((i) => NavigateToPageDirectly(i), allowsMultipleExecutions: false);
             DisabledColor = Color.Gray;
+            PageNumbers = new ObservableRangeCollection<PageNumberModel>();
+            CurrentPage = 1;
+            PageCount = 1;
 
         }
+        public ObservableRangeCollection<PageNumberModel> PageNumbers
+        {
+            get => GetValue<ObservableRangeCollection<PageNumberModel>>();
+            set => SetValue(value);
+        }
         public IAsyncCommand<int> OnPaginated { get; set; }
+
+        public PageNumberModel SelectedPageDetail
+        {
+            get
+            {
+                return PageNumbers.FirstOrDefault(a => a.Number == CurrentPage);
+            }
+        }
 
         public Color DisabledColor
         {
@@ -46,6 +66,11 @@ namespace Xam.Plugins.Pagination.ViewModels
         public int PageCount
         {
             get => GetValue<int>();
+            set => SetValue(value);
+        }
+        public bool NumberNavigationEnabled
+        {
+            get => GetValue<bool>();
             set => SetValue(value);
         }
 
@@ -140,6 +165,8 @@ namespace Xam.Plugins.Pagination.ViewModels
 
         public void SetPageNavigationValues()
         {
+            if (PageCount == 0 || CurrentPage == 0)
+                return;
             AllowFirstPageNavigation = true;
             AllowNextPageNavigation = true;
             AllowLastPageNavigation = true;
@@ -154,6 +181,8 @@ namespace Xam.Plugins.Pagination.ViewModels
                 AllowNextPageNavigation = false;
                 AllowLastPageNavigation = false;
             }
+
+            InitPageNumbers();
         }
 
         private async ValueTask GetLastPageData()
@@ -163,6 +192,35 @@ namespace Xam.Plugins.Pagination.ViewModels
             CurrentPage = PageCount;
             SetPageNavigationValues();
             await ExecuteCommand();
+        }
+        private async Task NavigateToPageDirectly(PageNumberModel selectedPageDetail)
+        {
+            bool isSamePageNumberPressed = CurrentPage == selectedPageDetail.Number;
+            if (isSamePageNumberPressed)
+                return;
+            CurrentPage = selectedPageDetail.Number;
+            SetPageNavigationValues();
+            await OnPaginated?.ExecuteAsync(selectedPageDetail.Number);
+        }
+
+        internal void InitPageNumbers()
+        {
+            if (CurrentPage == 0 || PageCount == 0)
+                return;
+            this.PageNumbers.Clear();
+            List<PageNumberModel> pageNums = new List<PageNumberModel>();
+            for (var i = 1; i <= PageCount; i++)
+            {
+                var model = new PageNumberModel()
+                {
+                    BackgroundColor = CurrentPage == i ? IconBackgroundColor : default,
+                    Number = i
+                };
+                pageNums.Add(model);
+            }
+            this.PageNumbers.AddRange(pageNums);
+            var selected = pageNums.FirstOrDefault(a => a.Number == CurrentPage);
+            MessagingCenter.Send<PageNumberModel>(selected, "page_number_changed");
         }
 
         private async ValueTask GetNextPageData()

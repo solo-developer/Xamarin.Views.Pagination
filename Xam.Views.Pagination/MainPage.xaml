@@ -9,11 +9,12 @@
             <Label Text="Welcome to Xamarin.Forms!" HorizontalTextAlignment="Center" TextColor="White" FontSize="36"/>
         </Frame>
         <customViews:PaginationView 
-                            CurrentPage="10"
+                            CurrentPage="1"
                             PageCount="15" 
                             OnPaginated="{Binding Source={x:Reference Page}, Path=BindingContext.OnPaginatedCommand}"
                             IconBackgroundColor="Red"
-                            DisabledColor="Gray"/>
+                            DisabledColor="Gray"
+                            NumberNavigationEnabled="True"/>
     </StackLayout>
 
 </ContentPage>

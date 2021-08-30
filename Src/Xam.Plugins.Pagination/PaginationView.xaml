@@ -4,65 +4,94 @@
              x:Class="Xam.Plugins.Pagination.PaginationView"
                 xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
              xmlns:viewModels="clr-namespace:Xam.Plugins.Pagination.ViewModels"
-             x:DataType="viewModels:PaginationViewModel">
+             xmlns:Models="clr-namespace:Xam.Plugins.Pagination.Models"
+               xmlns:Converters="clr-namespace:Xam.Plugins.Pagination.Converters"
+             x:DataType="viewModels:PaginationViewModel"
+             x:Name="PaginationPage">
     <ContentView.Resources>
         <Style x:Key="ImageButtonStyle" TargetType="ImageButton">
             <Setter Property="CornerRadius" Value="20"/>
             <Setter Property="HeightRequest" Value="40"/>
-            <Setter Property="WidthRequest" Value="35"/>
+            <Setter Property="WidthRequest" Value="40"/>
+            <Setter Property="BackgroundColor" Value="WhiteSmoke"/>
         </Style>
+        <Converters:InverseBoolConverter x:Key="InverseBool" />
     </ContentView.Resources>
-    <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" Margin="0,0,0,10">
+    <Grid HorizontalOptions="Center" Margin="10,0" HeightRequest="40">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
 
-        <ImageButton IsEnabled="{Binding AllowFirstPageNavigation}"  Style="{StaticResource ImageButtonStyle}">
-                <ImageButton.Source>
-                    <FontImageSource FontFamily="FontAwesomeSolid"
+        <ImageButton Grid.Row="0" Grid.Column="0" IsEnabled="{Binding AllowFirstPageNavigation}"  Style="{StaticResource ImageButtonStyle}">
+            <ImageButton.Source>
+                <FontImageSource FontFamily="FontAwesomeSolid"
                       Color="{Binding FirstPageButtonForegroundColor}"
                      Glyph="&#xf100;"/>
-                </ImageButton.Source>
+            </ImageButton.Source>
 
-                <ImageButton.Behaviors>
-                    <xct:EventToCommandBehavior EventName="Clicked" Command="{Binding MoveToFirstPageCommand}"></xct:EventToCommandBehavior>
-                </ImageButton.Behaviors>
-            </ImageButton>
+            <ImageButton.Behaviors>
+                <xct:EventToCommandBehavior EventName="Clicked" Command="{Binding MoveToFirstPageCommand}"></xct:EventToCommandBehavior>
+            </ImageButton.Behaviors>
+        </ImageButton>
 
-        <ImageButton IsEnabled="{Binding AllowPreviousPageNavigation}" Style="{StaticResource ImageButtonStyle}">
-                <ImageButton.Source>
-                    <FontImageSource FontFamily="FontAwesomeSolid"
+        <ImageButton Grid.Row="0" Grid.Column="1" IsEnabled="{Binding AllowPreviousPageNavigation}" Style="{StaticResource ImageButtonStyle}">
+            <ImageButton.Source>
+                <FontImageSource FontFamily="FontAwesomeSolid"
                       Color="{Binding PreviousPageButtonForegroundColor}"
                      Glyph="&#xf104;"/>
-                </ImageButton.Source>
-                <ImageButton.Behaviors>
-                    <xct:EventToCommandBehavior EventName="Clicked" Command="{Binding MoveToPreviousPageCommand}"></xct:EventToCommandBehavior>
-                </ImageButton.Behaviors>
-            </ImageButton>
-      
-        <Frame CornerRadius="20" HorizontalOptions="Start" WidthRequest="30" VerticalOptions="Center" Margin="0" Padding="10" BackgroundColor="{Binding IconBackgroundColor}">
-            <Label Text="{Binding CurrentPage}" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" FontAttributes="Bold" />
-        </Frame>
-        <Label Text="{Binding PageCount,StringFormat='Of {0}'}" VerticalOptions="Center" FontAttributes="Bold"/>
+            </ImageButton.Source>
+            <ImageButton.Behaviors>
+                <xct:EventToCommandBehavior EventName="Clicked" Command="{Binding MoveToPreviousPageCommand}"></xct:EventToCommandBehavior>
+            </ImageButton.Behaviors>
+        </ImageButton>
 
-        <ImageButton IsEnabled="{Binding AllowNextPageNavigation}" Style="{StaticResource ImageButtonStyle}">
-                <ImageButton.Source>
-                    <FontImageSource FontFamily="FontAwesomeSolid"
+        <StackLayout Grid.Row="0" Grid.Column="2" IsVisible="{Binding  NumberNavigationEnabled,Converter={StaticResource InverseBool}}" Orientation="Horizontal">
+            <Frame CornerRadius="30" HorizontalOptions="Start" WidthRequest="30" VerticalOptions="Center" Margin="0" Padding="10" BackgroundColor="{Binding IconBackgroundColor}">
+                <Label Text="{Binding CurrentPage}" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" FontAttributes="Bold" />
+            </Frame>
+            <Label Text="{Binding PageCount,StringFormat='Of {0}'}" VerticalOptions="Center" FontAttributes="Bold"/>
+        </StackLayout>
+        <CollectionView Grid.Row="0" Grid.Column="2" ItemsSource="{Binding PageNumbers}" IsVisible="{Binding NumberNavigationEnabled}" SelectionMode="Single" HorizontalScrollBarVisibility="Never" SelectedItem="{Binding CurrentPage}" x:Name="NumbersCollectionView">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Horizontal"/>
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="Models:PageNumberModel">
+                    <StackLayout>
+                        <Button Margin="5,0" CornerRadius="20" HeightRequest="40" WidthRequest="40" Text="{Binding Number}" TextColor="Black" Command="{Binding Source={x:Reference PaginationPage},Path=BindingContext.NavigatedThroughPageNumberCommand}" CommandParameter="{Binding .}" HorizontalOptions="Center" VerticalOptions="Center" BackgroundColor="{Binding BackgroundColor}">
+                        </Button>
+                    </StackLayout>
+
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <ImageButton Grid.Row="0" Grid.Column="3" IsEnabled="{Binding AllowNextPageNavigation}" Style="{StaticResource ImageButtonStyle}">
+            <ImageButton.Source>
+                <FontImageSource FontFamily="FontAwesomeSolid"
                       Color="{Binding NextPageButtonForegroundColor}"
                      Glyph="&#xf105;"/>
-                </ImageButton.Source>
-                <ImageButton.Behaviors>
-                    <xct:EventToCommandBehavior EventName="Clicked" Command="{Binding MoveToNextPageCommand}"></xct:EventToCommandBehavior>
-                </ImageButton.Behaviors>
-            </ImageButton>
+            </ImageButton.Source>
+            <ImageButton.Behaviors>
+                <xct:EventToCommandBehavior EventName="Clicked" Command="{Binding MoveToNextPageCommand}"></xct:EventToCommandBehavior>
+            </ImageButton.Behaviors>
+        </ImageButton>
 
-        <ImageButton IsEnabled="{Binding AllowLastPageNavigation}" Style="{StaticResource ImageButtonStyle}">
-                <ImageButton.Source>
-                    <FontImageSource FontFamily="FontAwesomeSolid"
+        <ImageButton Grid.Row="0" Grid.Column="4" IsEnabled="{Binding AllowLastPageNavigation}" Style="{StaticResource ImageButtonStyle}">
+            <ImageButton.Source>
+                <FontImageSource FontFamily="FontAwesomeSolid"
                        Color="{Binding LastPageButtonForegroundColor}"
                      Glyph="&#xf101;"/>
-                </ImageButton.Source>
-                <ImageButton.Behaviors>
-                    <xct:EventToCommandBehavior EventName="Clicked" Command="{Binding MoveToLastPageCommand}"></xct:EventToCommandBehavior>
-                </ImageButton.Behaviors>
-            </ImageButton>
-         
-    </StackLayout>
+            </ImageButton.Source>
+            <ImageButton.Behaviors>
+                <xct:EventToCommandBehavior EventName="Clicked" Command="{Binding MoveToLastPageCommand}"></xct:EventToCommandBehavior>
+            </ImageButton.Behaviors>
+        </ImageButton>
+
+    </Grid>
 </ContentView>
