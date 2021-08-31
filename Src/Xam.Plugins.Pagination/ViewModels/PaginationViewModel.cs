@@ -182,7 +182,11 @@ namespace Xam.Plugins.Pagination.ViewModels
                 AllowLastPageNavigation = false;
             }
 
-            InitPageNumbers();
+            var selected = PageNumbers.FirstOrDefault(a => a.Number == CurrentPage);
+            if (selected == null)
+                return;
+            MessagingCenter.Send<PageNumberModel>(selected, "page_number_changed");
+
         }
 
         private async ValueTask GetLastPageData()
@@ -203,24 +207,22 @@ namespace Xam.Plugins.Pagination.ViewModels
             await OnPaginated?.ExecuteAsync(selectedPageDetail.Number);
         }
 
-        internal void InitPageNumbers()
+        public void InitPageNumbers()
         {
             if (CurrentPage == 0 || PageCount == 0)
                 return;
-            this.PageNumbers.Clear();
+            SetPageNavigationValues();
+            PageNumbers.Clear();
             List<PageNumberModel> pageNums = new List<PageNumberModel>();
             for (var i = 1; i <= PageCount; i++)
             {
                 var model = new PageNumberModel()
                 {
-                    BackgroundColor = CurrentPage == i ? IconBackgroundColor : default,
                     Number = i
                 };
                 pageNums.Add(model);
             }
-            this.PageNumbers.AddRange(pageNums);
-            var selected = pageNums.FirstOrDefault(a => a.Number == CurrentPage);
-            MessagingCenter.Send<PageNumberModel>(selected, "page_number_changed");
+            this.PageNumbers.AddRange(pageNums);          
         }
 
         private async ValueTask GetNextPageData()
@@ -229,6 +231,7 @@ namespace Xam.Plugins.Pagination.ViewModels
                 return;
             CurrentPage += 1;
             SetPageNavigationValues();
+
             await ExecuteCommand();
         }
 

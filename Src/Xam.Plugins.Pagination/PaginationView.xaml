@@ -16,7 +16,9 @@
             <Setter Property="BackgroundColor" Value="WhiteSmoke"/>
         </Style>
         <Converters:InverseBoolConverter x:Key="InverseBool" />
+        <Converters:SelectedItemColorConverter x:Key="SelectedItemColor" />
     </ContentView.Resources>
+    
     <Grid HorizontalOptions="Center" Margin="10,0" HeightRequest="40">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -63,7 +65,14 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="Models:PageNumberModel">
                     <StackLayout>
-                        <Button Margin="5,0" CornerRadius="20" HeightRequest="40" WidthRequest="40" Text="{Binding Number}" TextColor="Black" Command="{Binding Source={x:Reference PaginationPage},Path=BindingContext.NavigatedThroughPageNumberCommand}" CommandParameter="{Binding .}" HorizontalOptions="Center" VerticalOptions="Center" BackgroundColor="{Binding BackgroundColor}">
+                        <Button Margin="5,0" CornerRadius="20" HeightRequest="40" WidthRequest="40" Text="{Binding Number}" TextColor="Black" Command="{Binding Source={x:Reference PaginationPage},Path=BindingContext.NavigatedThroughPageNumberCommand}" CommandParameter="{Binding .}" HorizontalOptions="Center" VerticalOptions="Center">
+                            <Button.BackgroundColor>
+                                <MultiBinding Converter="{StaticResource SelectedItemColor}">
+                                    <Binding Path="Number" />
+                                    <Binding Source="{x:Reference PaginationPage}" Path="BindingContext.CurrentPage" />
+                                    <Binding Source="{x:Reference PaginationPage}" Path="BindingContext.IconBackgroundColor" />
+                                </MultiBinding>
+                            </Button.BackgroundColor>
                         </Button>
                     </StackLayout>
 

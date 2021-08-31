@@ -66,7 +66,7 @@ namespace Xam.Plugins.Pagination
         {
             var vm = (PaginationViewModel)bindable.BindingContext;
             vm.PageCount = (int)newValue;
-            vm.SetPageNavigationValues();
+            vm.InitPageNumbers();
             ((PaginationView)bindable).NumbersCollectionView.WidthRequest = ((int)newValue) * 50 + 5;
         }
 
