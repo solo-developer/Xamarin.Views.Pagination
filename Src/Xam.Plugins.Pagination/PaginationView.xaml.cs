@@ -41,6 +41,8 @@ namespace Xam.Plugins.Pagination
             var vm = (PaginationViewModel)bindable.BindingContext;
             vm.NumberNavigationEnabled = (bool)newValue;
             vm.SetPageNavigationValues();
+            if ((bool)newValue)
+                vm.InitPageNumbers();
         }
 
         private static void OnPaginatedCommandChanged(BindableObject bindable, object oldValue, object newValue)
