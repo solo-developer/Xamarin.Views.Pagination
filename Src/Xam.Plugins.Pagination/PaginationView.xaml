@@ -17,8 +17,9 @@
         </Style>
         <Converters:InverseBoolConverter x:Key="InverseBool" />
         <Converters:SelectedItemColorConverter x:Key="SelectedItemColor" />
+        <Converters:BooleanToBackgroundColorConverter x:Key="BooleanToBackgroundColor" />
     </ContentView.Resources>
-    
+
     <Grid HorizontalOptions="Center" Margin="10,0" HeightRequest="40">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -31,9 +32,16 @@
 
         <ImageButton Grid.Row="0" Grid.Column="0" IsEnabled="{Binding AllowFirstPageNavigation}"  Style="{StaticResource ImageButtonStyle}">
             <ImageButton.Source>
-                <FontImageSource FontFamily="FontAwesomeSolid"
-                      Color="{Binding FirstPageButtonForegroundColor}"
-                     Glyph="&#xf100;"/>
+                <FontImageSource FontFamily="FontAwesomeSolid"                     
+                     Glyph="&#xf100;">
+                    <FontImageSource.Color>
+                        <MultiBinding Converter="{StaticResource BooleanToBackgroundColor}">
+                            <Binding Path="AllowFirstPageNavigation" />
+                            <Binding Path="IconBackgroundColor" />
+                            <Binding Path="DisabledColor" />
+                        </MultiBinding>
+                    </FontImageSource.Color>
+                </FontImageSource>
             </ImageButton.Source>
 
             <ImageButton.Behaviors>
@@ -44,8 +52,15 @@
         <ImageButton Grid.Row="0" Grid.Column="1" IsEnabled="{Binding AllowPreviousPageNavigation}" Style="{StaticResource ImageButtonStyle}">
             <ImageButton.Source>
                 <FontImageSource FontFamily="FontAwesomeSolid"
-                      Color="{Binding PreviousPageButtonForegroundColor}"
-                     Glyph="&#xf104;"/>
+                     Glyph="&#xf104;">
+                    <FontImageSource.Color>
+                        <MultiBinding Converter="{StaticResource BooleanToBackgroundColor}">
+                            <Binding Path="AllowPreviousPageNavigation" />
+                            <Binding Path="IconBackgroundColor" />
+                            <Binding Path="DisabledColor" />
+                        </MultiBinding>
+                    </FontImageSource.Color>
+                </FontImageSource>
             </ImageButton.Source>
             <ImageButton.Behaviors>
                 <xct:EventToCommandBehavior EventName="Clicked" Command="{Binding MoveToPreviousPageCommand}"></xct:EventToCommandBehavior>
@@ -83,8 +98,15 @@
         <ImageButton Grid.Row="0" Grid.Column="3" IsEnabled="{Binding AllowNextPageNavigation}" Style="{StaticResource ImageButtonStyle}">
             <ImageButton.Source>
                 <FontImageSource FontFamily="FontAwesomeSolid"
-                      Color="{Binding NextPageButtonForegroundColor}"
-                     Glyph="&#xf105;"/>
+                     Glyph="&#xf105;">
+                    <FontImageSource.Color>
+                        <MultiBinding Converter="{StaticResource BooleanToBackgroundColor}">
+                            <Binding Path="AllowNextPageNavigation" />
+                            <Binding Path="IconBackgroundColor" />
+                            <Binding Path="DisabledColor" />
+                        </MultiBinding>
+                    </FontImageSource.Color>
+                </FontImageSource>
             </ImageButton.Source>
             <ImageButton.Behaviors>
                 <xct:EventToCommandBehavior EventName="Clicked" Command="{Binding MoveToNextPageCommand}"></xct:EventToCommandBehavior>
@@ -94,8 +116,15 @@
         <ImageButton Grid.Row="0" Grid.Column="4" IsEnabled="{Binding AllowLastPageNavigation}" Style="{StaticResource ImageButtonStyle}">
             <ImageButton.Source>
                 <FontImageSource FontFamily="FontAwesomeSolid"
-                       Color="{Binding LastPageButtonForegroundColor}"
-                     Glyph="&#xf101;"/>
+                     Glyph="&#xf101;">
+                    <FontImageSource.Color>
+                        <MultiBinding Converter="{StaticResource BooleanToBackgroundColor}">
+                            <Binding Path="AllowLastPageNavigation" />
+                            <Binding Path="IconBackgroundColor" />
+                            <Binding Path="DisabledColor" />
+                        </MultiBinding>
+                    </FontImageSource.Color>
+                </FontImageSource>
             </ImageButton.Source>
             <ImageButton.Behaviors>
                 <xct:EventToCommandBehavior EventName="Clicked" Command="{Binding MoveToLastPageCommand}"></xct:EventToCommandBehavior>

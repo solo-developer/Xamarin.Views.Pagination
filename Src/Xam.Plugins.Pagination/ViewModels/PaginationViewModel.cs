@@ -15,14 +15,12 @@ namespace Xam.Plugins.Pagination.ViewModels
         public IAsyncValueCommand MoveToLastPageCommand { get; set; }
         public IAsyncCommand<PageNumberModel> NavigatedThroughPageNumberCommand { get; set; }
 
-
-
         public PaginationViewModel()
         {
-            MoveToFirstPageCommand = new AsyncValueCommand(() => GetFirstPageData(), allowsMultipleExecutions: false);
-            MoveToPreviousPageCommand = new AsyncValueCommand(() => GetPreviousPageData(), allowsMultipleExecutions: false);
-            MoveToNextPageCommand = new AsyncValueCommand(() => GetNextPageData(), allowsMultipleExecutions: false);
-            MoveToLastPageCommand = new AsyncValueCommand(() => GetLastPageData(), allowsMultipleExecutions: false);
+            MoveToFirstPageCommand = new AsyncValueCommand(() => MoveToFirstPage(), allowsMultipleExecutions: false);
+            MoveToPreviousPageCommand = new AsyncValueCommand(() => MoveToPreviousPage(), allowsMultipleExecutions: false);
+            MoveToNextPageCommand = new AsyncValueCommand(() => MoveToNextPage(), allowsMultipleExecutions: false);
+            MoveToLastPageCommand = new AsyncValueCommand(() => MoveToLastPage(), allowsMultipleExecutions: false);
             NavigatedThroughPageNumberCommand = new AsyncCommand<PageNumberModel>((i) => NavigateToPageDirectly(i), allowsMultipleExecutions: false);
             DisabledColor = Color.Gray;
             PageNumbers = new ObservableRangeCollection<PageNumberModel>();
@@ -30,6 +28,10 @@ namespace Xam.Plugins.Pagination.ViewModels
             PageCount = 1;
 
         }
+
+        /// <summary>
+        /// Page nubers that are available for traversal
+        /// </summary>
         public ObservableRangeCollection<PageNumberModel> PageNumbers
         {
             get => GetValue<ObservableRangeCollection<PageNumberModel>>();
@@ -44,75 +46,61 @@ namespace Xam.Plugins.Pagination.ViewModels
                 return PageNumbers.FirstOrDefault(a => a.Number == CurrentPage);
             }
         }
-
+        /// <summary>
+        /// nagivation button's (forward and backward) background colour when it is disabled
+        /// </summary>
         public Color DisabledColor
         {
             get => GetValue<Color>();
             set => SetValue(value);
         }
 
+        /// <summary>
+        /// nagivation button's (forward and backward) background colour when it is enabled
+        /// </summary>
         public Color IconBackgroundColor
         {
             get => GetValue<Color>();
             set => SetValue(value);
         }
 
+
+        /// <summary>
+        /// page number we are in
+        /// </summary>
         public int CurrentPage
         {
             get => GetValue<int>();
             set => SetValue(value);
         }
 
+        /// <summary>
+        /// total number of pages 
+        /// </summary>
         public int PageCount
         {
             get => GetValue<int>();
             set => SetValue(value);
         }
+
+        /// <summary>
+        /// boolean to state whether to show page numbers that users can use to traverse
+        /// if set to false, page number navigation is not allowed. Only page info is shown
+        /// </summary>
         public bool NumberNavigationEnabled
         {
             get => GetValue<bool>();
             set => SetValue(value);
         }
 
-        private Color _firstPageForegroundColor;
-        public Color FirstPageButtonForegroundColor
+        private bool _allowFirstPageNavigation;
+        public bool AllowFirstPageNavigation
         {
-            get => _firstPageForegroundColor;
+            get => _allowFirstPageNavigation;
             set
             {
-                _firstPageForegroundColor = value;
-                OnPropertyChanged(nameof(FirstPageButtonForegroundColor));
-            }
-        }
-        private Color _previousPageForegroundColor;
-        public Color PreviousPageButtonForegroundColor
-        {
-            get => _previousPageForegroundColor;
-            set
-            {
-                _previousPageForegroundColor = value;
-                OnPropertyChanged(nameof(PreviousPageButtonForegroundColor));
-            }
-        }
-
-        private Color _nextPageForegroundColor;
-        public Color NextPageButtonForegroundColor
-        {
-            get => _nextPageForegroundColor;
-            set
-            {
-                _nextPageForegroundColor = value;
-                OnPropertyChanged(nameof(NextPageButtonForegroundColor));
-            }
-        }
-        private Color _lastPageForegroundColor;
-        public Color LastPageButtonForegroundColor
-        {
-            get => _lastPageForegroundColor;
-            set
-            {
-                _lastPageForegroundColor = value;
-                OnPropertyChanged(nameof(LastPageButtonForegroundColor));
+                _allowFirstPageNavigation = value;
+                OnPropertyChanged(nameof(AllowFirstPageNavigation));
             }
         }
 
@@ -123,22 +111,10 @@ namespace Xam.Plugins.Pagination.ViewModels
             set
             {
                 _allowPreviousPageNavigation = value;
-                PreviousPageButtonForegroundColor = value ? IconBackgroundColor : DisabledColor;
                 OnPropertyChanged(nameof(AllowPreviousPageNavigation));
             }
         }
-        private bool _allowFirstPageNavigation;
-        public bool AllowFirstPageNavigation
-        {
-            get => _allowFirstPageNavigation;
-            set
-            {
-                _allowFirstPageNavigation = value;
-
-                FirstPageButtonForegroundColor = value ? IconBackgroundColor : DisabledColor;
-                OnPropertyChanged(nameof(AllowFirstPageNavigation));
-            }
-        }
+      
 
         private bool _allowNextPageNavigation;
         public bool AllowNextPageNavigation
@@ -147,7 +123,6 @@ namespace Xam.Plugins.Pagination.ViewModels
             set
             {
                 _allowNextPageNavigation = value;
-                NextPageButtonForegroundColor = value ? IconBackgroundColor : DisabledColor;
                 OnPropertyChanged(nameof(AllowNextPageNavigation));
             }
         }
@@ -158,11 +133,13 @@ namespace Xam.Plugins.Pagination.ViewModels
             set
             {
                 _allowLastPageNavigation = value;
-                LastPageButtonForegroundColor = value ? IconBackgroundColor : DisabledColor;
                 OnPropertyChanged(nameof(AllowLastPageNavigation));
             }
         }
 
+        /// <summary>
+        /// set navigation button status and publish selected page detail to subscriber
+        /// </summary>
         public void SetPageNavigationValues()
         {
             if (PageCount == 0 || CurrentPage == 0)
@@ -181,15 +158,22 @@ namespace Xam.Plugins.Pagination.ViewModels
                 AllowNextPageNavigation = false;
                 AllowLastPageNavigation = false;
             }
+            PubishSelectedPageToConsumer();
 
+        }
+
+        /// <summary>
+        /// publishes an event  through messagingCenter whenever page number is selected
+        /// </summary>
+        private void PubishSelectedPageToConsumer()
+        {
             var selected = PageNumbers.FirstOrDefault(a => a.Number == CurrentPage);
             if (selected == null)
                 return;
             MessagingCenter.Send<PageNumberModel>(selected, "page_number_changed");
-
         }
 
-        private async ValueTask GetLastPageData()
+        private async ValueTask MoveToLastPage()
         {
             if (CurrentPage == PageCount)
                 return;
@@ -197,6 +181,12 @@ namespace Xam.Plugins.Pagination.ViewModels
             SetPageNavigationValues();
             await ExecuteCommand();
         }
+
+        /// <summary>
+        /// Used to traverse to page using page numbers whenever user selects a page number from available pages
+        /// </summary>
+        /// <param name="selectedPageDetail"></param>
+        /// <returns></returns>
         private async Task NavigateToPageDirectly(PageNumberModel selectedPageDetail)
         {
             bool isSamePageNumberPressed = CurrentPage == selectedPageDetail.Number;
@@ -207,6 +197,9 @@ namespace Xam.Plugins.Pagination.ViewModels
             await OnPaginated?.ExecuteAsync(selectedPageDetail.Number);
         }
 
+        /// <summary>
+        /// Sets available page numbers from 1 to total number of pages
+        /// </summary>
         public void InitPageNumbers()
         {
             if (CurrentPage == 0 || PageCount == 0)
@@ -225,7 +218,7 @@ namespace Xam.Plugins.Pagination.ViewModels
             this.PageNumbers.AddRange(pageNums);          
         }
 
-        private async ValueTask GetNextPageData()
+        private async ValueTask MoveToNextPage()
         {
             if (CurrentPage == PageCount)
                 return;
@@ -235,7 +228,7 @@ namespace Xam.Plugins.Pagination.ViewModels
             await ExecuteCommand();
         }
 
-        private async ValueTask GetPreviousPageData()
+        private async ValueTask MoveToPreviousPage()
         {
             if (CurrentPage == 1)
                 return;
@@ -244,7 +237,7 @@ namespace Xam.Plugins.Pagination.ViewModels
             await ExecuteCommand();
         }
 
-        private async ValueTask GetFirstPageData()
+        private async ValueTask MoveToFirstPage()
         {
             if (CurrentPage == 1)
                 return;
@@ -253,6 +246,10 @@ namespace Xam.Plugins.Pagination.ViewModels
             await ExecuteCommand();
         }
 
+        /// <summary>
+        /// trigger user-defined command on paginated
+        /// </summary>
+        /// <returns></returns>
         private async Task ExecuteCommand()
         {
             if (OnPaginated != null)
