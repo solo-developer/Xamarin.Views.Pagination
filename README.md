@@ -14,7 +14,8 @@ Web-like pagination component for Xamarin Forms
                             PageCount="15" 
                             OnPaginated="{Binding Source={x:Reference Page}, Path=BindingContext.OnPaginatedCommand}"
                             IconBackgroundColor="Red"
-                            DisabledColor="Gray"/>   
+                            DisabledColor="Gray"
+                            NumberNavigationEnabled="True"/>   
 
 **Available Bindable Properties**   
 
@@ -28,9 +29,11 @@ Web-like pagination component for Xamarin Forms
 Set color of navigation button in pagination component     
   
   ***DisabledColor***     
-Sets color of button when they are disabled
+Sets color of button when they are disabled      
+ ***NumberNavigationEnabled***     
+ Boolean value that represents whether to navigate using page numbers 
    
 **Working Screenshot**  
 ![alt text][screenshot]
 
-[screenshot]: https://github.com/solo-developer/Xamarin.Views.Pagination/blob/main/xam.pager..gif "Xamarin Pagination"
+[screenshot]: https://github.com/solo-developer/Xamarin.Views.Pagination/blob/main/xam.plugins.pagination.gif "Xamarin Pagination"
