@@ -4,6 +4,9 @@ using Xamarin.Forms;
 
 namespace Xam.Plugins.Pagination.Converters
 {
+    /// <summary>
+    /// Negates a bool and returns it
+    /// </summary>
     public class InverseBoolConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

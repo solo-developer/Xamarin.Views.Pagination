@@ -7,11 +7,12 @@ namespace Xam.Plugins.Pagination.Converters
     public class SelectedItemColorConverter : IMultiValueConverter
     {
         /// <summary>
+        ///  compares two values and returns color(third param in values array) if both values are equal
+        /// </summary>
+        /// <param name="values">
         /// first param is number to check
         /// second param is selected page number
-        /// third param is the selected color value
-        /// </summary>
-        /// <param name="values"></param>
+        /// third param is the selected color value</param>
         /// <param name="targetType"></param>
         /// <param name="parameter"></param>
         /// <param name="culture"></param>
@@ -23,7 +24,7 @@ namespace Xam.Plugins.Pagination.Converters
             if (values[0] == null || values[1] == null)
                 return Color.Default;
 
-            if((int)values[0]==(int)values[1])
+            if ((int)values[0] == (int)values[1])
             {
                 return (Color)values[2];
             }
